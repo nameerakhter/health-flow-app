@@ -55,7 +55,7 @@ export default function RegisterPatientForm() {
 
   async function onSubmit(data: z.infer<typeof patientFormSchema>) {
     try {
-      const result = await db.query(
+      await db.query(
         `INSERT INTO patients (
           first_name,
           last_name,
@@ -85,13 +85,13 @@ export default function RegisterPatientForm() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50 p-4 md:p-8">
       <Card className="w-full max-w-3xl overflow-hidden border-0 bg-white shadow-xl">
-        <div className="absolute top-0 left-0 h-2 w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
+        <div className="absolute top-0 left-0 h-2 w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
 
         <div className="flex flex-col md:flex-row">
           <div className="relative hidden w-1/3 bg-gradient-to-br from-blue-600 to-indigo-800 text-white md:block">
             <div className="relative z-10 flex h-full flex-col p-8">
               <div className="mb-8">
-                <Avatar className="h-12 w-12 border-2 border-white/20">
+                <Avatar className="size-12 border-2 border-white/20">
                   <AvatarImage
                     src="https://cdn-icons-png.flaticon.com/512/3774/3774079.png"
                     alt="Healthcare"
@@ -126,8 +126,8 @@ export default function RegisterPatientForm() {
               <div className="mt-auto pt-6">
                 <Separator className="mb-6 bg-white/20" />
                 <p className="text-sm text-blue-200">
-                  "Your health is our priority. We're here to provide the best
-                  care possible."
+                  Your health is our priority. We are here to provide the best
+                  care possible.
                 </p>
               </div>
             </div>
@@ -161,12 +161,13 @@ export default function RegisterPatientForm() {
                           </FormLabel>
                           <FormControl>
                             <Input
+                              type="text"
                               {...field}
                               className="rounded-md border-gray-200 focus-visible:ring-blue-500"
                               placeholder="John"
                             />
                           </FormControl>
-                          <FormMessage className="text-sm text-rose-500" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -181,12 +182,13 @@ export default function RegisterPatientForm() {
                           </FormLabel>
                           <FormControl>
                             <Input
+                              type="text"
                               {...field}
                               className="rounded-md border-gray-200 focus-visible:ring-blue-500"
                               placeholder="Doe"
                             />
                           </FormControl>
-                          <FormMessage className="text-sm text-rose-500" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -195,25 +197,43 @@ export default function RegisterPatientForm() {
                   <FormField
                     control={form.control}
                     name="date_of_birth"
-                    render={({ field }) => (
-                      <FormItem className="space-y-2">
-                        <FormLabel className="flex items-center gap-2 font-medium text-gray-700">
-                          <CalendarIcon className="size-4 text-blue-500" />
-                          Date of Birth
-                        </FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Input
-                              {...field}
-                              type="text"
-                              className="rounded-md border-gray-200 focus-visible:ring-blue-500"
-                              placeholder="MM/DD/YYYY"
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage className="text-sm text-rose-500" />
-                      </FormItem>
-                    )}
+                    render={({ field }) => {
+                      function handleInput(
+                        e: React.ChangeEvent<HTMLInputElement>,
+                      ) {
+                        let value = e.target.value.replace(/\D/g, '')
+                        if (value.length > 8) value = value.slice(0, 8)
+                        let formatted = value
+                        if (value.length > 4) {
+                          formatted = `${value.slice(0, 2)}/${value.slice(2, 4)}/${value.slice(4)}`
+                        } else if (value.length > 2) {
+                          formatted = `${value.slice(0, 2)}/${value.slice(2)}`
+                        }
+                        field.onChange(formatted)
+                      }
+
+                      return (
+                        <FormItem className="space-y-2">
+                          <FormLabel className="flex items-center gap-2 font-medium text-gray-700">
+                            <CalendarIcon className="size-4 text-blue-500" />
+                            Date of Birth
+                          </FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Input
+                                {...field}
+                                value={field.value || ''}
+                                onChange={handleInput}
+                                type="text"
+                                className="rounded-md border-gray-200 focus-visible:ring-blue-500"
+                                placeholder="MM/DD/YYYY"
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )
+                    }}
                   />
 
                   <FormField
@@ -233,7 +253,7 @@ export default function RegisterPatientForm() {
                             placeholder="john.doe@example.com"
                           />
                         </FormControl>
-                        <FormMessage className="text-sm text-rose-500" />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -250,11 +270,12 @@ export default function RegisterPatientForm() {
                         <FormControl>
                           <Input
                             {...field}
+                            type="tel"
                             className="rounded-md border-gray-200 focus-visible:ring-blue-500"
                             placeholder="(123) 456-7890"
                           />
                         </FormControl>
-                        <FormMessage className="text-sm text-rose-500" />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -275,7 +296,7 @@ export default function RegisterPatientForm() {
                             placeholder="123 Main St, City, State, Zip"
                           />
                         </FormControl>
-                        <FormMessage className="text-sm text-rose-500" />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -304,7 +325,3 @@ export default function RegisterPatientForm() {
     </div>
   )
 }
-
-// export default function RegisterPatientForm() {
-//   return <div>RegisterPatientForm</div>
-// }
