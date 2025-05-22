@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Health Flow App
 
-## Getting Started
+Patient registration application built with Next.js and PgLite for local data storage.
 
-First, run the development server:
+## Features Implemented
+
+- Patient registration and management
+- Persist data during page reloads
+- Cross-tab synchronization
+
+## Tech Stack Used
+
+- **Frontend Framework**: Next.js 15.3.2
+- **Database**: PgLite (Electric SQL)
+- **UI Components**:
+  - Shadcn UI
+  - Tailwind CSS
+- **Form Handling**: React Hook Form with Zod validation
+- **Additional Tools**:
+  - ESLint
+  - Prettier
+
+## Setting up the project locally
+
+### Prerequisites
+
+- Node.js (Latest LTS version recommended)
+- pnpm (Package manager)
+
+### Installation
+
+1. Clone the repository:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/nameerakhter/health-flow-app
+cd health-flow-app
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Start the development server:
 
-## Learn More
+```bash
+pnpm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+The application will be available at `http://localhost:3000`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Development
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm lint` - Run ESLint checks
+- `pnpm format` - Format code with Prettier
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/
+├── app/          # Next.js app directory
+├── components/   # Reusable UI components
+└── lib/         # Utility functions
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Development Challenges
+
+1. **Data Persistence**
+
+   - PROBLEM: The problem with persisting data across page refreshes when running a database directly in the browser is that traditional browser environments are designed to be stateless. Any data held in memory by JavaScript, including an in-memory database instance, is lost as soon as the page is unloaded or refreshed. This means that if you're building a client-side application with a database like PGlite, users would lose all their changes every time they navigated away or refreshed the page.
+
+   - SOLUTION: PGlite solves this issue by gving us an option to use IndexedDB. So instead of relyingon in-memory storage, PGlite can be configured to store its entire PostgreSQL database within IndexedDB. I was able to initialize PGlite with a dataDir parameter, it helped me serialize the database state and save it in a persistent storage. So when I refreshed the page PGlite re-initialized itself by reading these stored files from IndexedDB.
+
+2. **Cross-tab Synchronization**
+
+   - PROBLEM: The problem with cross-tab synchronization is that each browser tab typically runs in its own isolated JavaScript environment. If multiple tabs open the same application and interact with what they think is the same local database, they would actually be operating on separate, independent instances of that database. This means a change made in one tab would not automatically reflect in another, leading to inconsistent data views and user will have to manually reload the page to see the correct data.
+
+   - SOLUTION: I was able to solve it by using the PGlite Web Worker and using PGlite's built-in live extension. By creating a pglite-worker.js file (placed in the public folder for Next.js) and initializing PGlite within that worker, I ensured that there's only one single instance of the database running across all open tabs of the application.Also, by including the live extension, PGlite provides mechanisms for tabs to subscribe to real-time updates from this central database. When one tab makes a change to the database through the worker, the live extension can automatically notify other connected tabs about the data change, allowing them to update their UI to reflect the latest state.
+
+3. **NEXTJS LOADING WORKER FILE ON SERVER**
+
+   - PROBLEM: The problem with loading worker files in Next.js is that Next.js has both server-side and client-side rendering. If you place a Web Worker file directly in a app directory, Next.js might try to bundle or process it on the server. Web Workers are browser-specific APIs and cannot be used or run in a Node.js environment (where server-side rendering occurs). This leads to errors and application crashes because the server-side build process was attempting to interpret browser-only code.
+
+   - SOLUTION: I solved it by moving the worker file into the public folder of the Next.js project. The public folder in Next.js is specifically designed for serving static assets directly, without any processing by the Next.js build system on either the server or client side. By placing the pglite-worker.js file in the public directory, I was able to ensure that it is treated as a static file. This means the Next.js server doesn't try to process or execute it during server-side rendering, and the browser can fetch it directly via a simple URL (e.g., /pglite-worker.js) when the client-side JavaScript code attempts to initialize the Web Worker.
