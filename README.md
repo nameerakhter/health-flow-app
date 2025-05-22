@@ -1,6 +1,8 @@
 # Health Flow App
-
+![Screenshot from 2025-05-22 11-31-46](https://github.com/user-attachments/assets/f38c813a-163f-4545-ad3f-ca4134e45f72)
+![Screenshot from 2025-05-22 11-32-38](https://github.com/user-attachments/assets/bf95dc33-4429-489c-9bfc-a812101e1f99)
 Patient registration application built with Next.js and PgLite for local data storage.
+
 
 ## Features Implemented
 
