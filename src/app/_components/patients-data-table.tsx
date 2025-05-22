@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useLiveQuery } from '@electric-sql/pglite-react'
 import { DataTable } from '@/components/data-table'
-import { Search, Filter, MoreHorizontal, Trash } from 'lucide-react'
+import { Search, MoreHorizontal, Trash } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -18,7 +18,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
