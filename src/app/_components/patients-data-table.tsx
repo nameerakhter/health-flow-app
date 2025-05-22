@@ -124,6 +124,7 @@ export default function PatientsDataTable() {
     },
     {
       id: 'actions',
+      header: 'Actions',
       cell: () => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -153,9 +154,7 @@ export default function PatientsDataTable() {
             <CardTitle className="text-2xl font-bold">
               Patients Directory
             </CardTitle>
-            <CardDescription>
-              Manage and view all registered patients
-            </CardDescription>
+            <CardDescription>View all registered patients</CardDescription>
           </div>
         </div>
       </CardHeader>
@@ -172,19 +171,9 @@ export default function PatientsDataTable() {
                 onChange={(e) => setFilterText(e.target.value)}
               />
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex h-9 items-center gap-1 text-xs font-medium"
-              >
-                <Filter className="size-3.5" />
-                Filter
-              </Button>
-              <Badge className="border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100">
-                {globalTableFilter.length} patients
-              </Badge>
-            </div>
+            <Badge className="border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100">
+              {globalTableFilter.length} patients
+            </Badge>
           </div>
         </div>
 
@@ -194,9 +183,6 @@ export default function PatientsDataTable() {
           <DataTable columns={columns} data={globalTableFilter} />
         )}
       </CardContent>
-      <CardFooter className="border-t border-gray-100 px-6 py-4 text-sm text-gray-500">
-        Last updated just now
-      </CardFooter>
     </Card>
   )
 }
